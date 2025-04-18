@@ -1,15 +1,21 @@
 {
-    "manifest_version": 3,
-    "name": "URL Blocker",
-    "version": "1.0",
-    "permissions": ["storage", "webRequest", "webRequestBlocking"],
-    "host_permissions": ["<all_urls>"],
-    "background": {
-      "service_worker": "dist/background.js"
-    },
-    "action": {
-      "default_popup": "popup.html",
-      "default_title": "Block URLs"
-    }
+  "manifest_version": 3,
+  "name": "URL Blocker",
+  "version": "1.0",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "storage"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Block URLs"
+  },
+  "background": {
+    "service_worker": "dist/background.js"
   }
+}
+
+
   
