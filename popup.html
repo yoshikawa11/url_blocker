@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>URL Blocker</title>
-  </head>
-  <body>
-    <h2>ブロック対象URL</h2>
-    <input type="text" id="url-input" placeholder="example.com" />
-    <button id="add-button">追加</button>
-    <ul id="url-list"></ul>
-    <script src="dist/popup.js"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Blocker</title>
+</head>
+<body>
+  <h3>Blocked URLs</h3>
+  <form id="url-form">
+    <input type="text" id="url-input" placeholder="example.com" required />
+    <button type="submit">Add</button>
+  </form>
+  <ul id="url-list"></ul>
+
+  <h3>Time Ranges</h3>
+  <form id="time-form">
+    <input type="time" id="start-time" required />
+    <input type="time" id="end-time" required />
+    <button type="submit">Add Time Range</button>
+  </form>
+  <ul id="time-list"></ul>
+
+  <script src="dist/popup.js" type="module"></script>
+</body>
 </html>
