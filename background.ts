@@ -10,12 +10,29 @@ function isWithinAnyTimeRange(timeRanges: { startTime: string; endTime: string }
   return timeRanges.some(range => {
     const start = parseTime(range.startTime);
     const end = parseTime(range.endTime);
-    return current >= start && current <= end;
+    // 時間帯が日をまたぐ場合も考慮
+    if (start <= end) {
+      return current >= start && current <= end;
+    } else {
+      return current >= start || current <= end;
+    }
   });
 }
 
 function updateBlockRules(domains: string[], timeRanges: { startTime: string; endTime: string }[]) {
   const RULE_ID_OFFSET = 1000;
+  // 現在の時間が指定された時間帯に含まれているか確認
+  const isActive = isWithinAnyTimeRange(timeRanges);
+
+  if (!isActive) {
+    console.log("現在の時間は指定された時間帯に含まれていません。ルールを削除します。");
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: Array.from({ length: 1000 }, (_, i) => i + 1000) // 既存のルールを削除
+    });
+    return;
+  }
+
+  // 時間帯が有効な場合のみルールを適用
   const rules: chrome.declarativeNetRequest.Rule[] = domains.map((domain, i) => ({
     id: RULE_ID_OFFSET + i,
     priority: 1,
@@ -25,8 +42,6 @@ function updateBlockRules(domains: string[], timeRanges: { startTime: string; en
       resourceTypes: ["main_frame"] as chrome.declarativeNetRequest.ResourceType[]
     }
   }));
-
-  const ruleIds = rules.map(rule => rule.id);
 
   chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: Array.from({ length: 1000 }, (_, i) => i + 1000), // 既存のルールを削除

@@ -10,14 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const blockToggle = document.getElementById("block-toggle") as HTMLInputElement;
 
-  // debug
-  console.log("DOMContentLoaded イベントが発火しました");
-  if (!blockToggle) {
-    console.error("block-toggle 要素が見つかりません");
-  } else {
-    console.log("block-toggle 要素が正常に取得されました");
-  }
-
   // 初期状態を取得してトグルに反映
   chrome.storage.local.get("isBlocked", (res) => {
     blockToggle.checked = res.isBlocked ?? false;
