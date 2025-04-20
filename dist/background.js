@@ -24,23 +24,26 @@ function updateBlockRules(domains, timeRanges) {
         }
     }));
     const ruleIds = rules.map(rule => rule.id);
-    if (isWithinAnyTimeRange(timeRanges)) {
-        chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: ruleIds,
-            addRules: rules
-        });
-    }
-    else {
-        chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: ruleIds
-        });
-    }
+    chrome.declarativeNetRequest.updateDynamicRules({
+        removeRuleIds: Array.from({ length: 1000 }, (_, i) => i + 1000), // 既存のルールを削除
+        addRules: rules
+    });
 }
 function syncRulesFromStorage() {
-    chrome.storage.local.get(["blockedUrls", "blockTimeRanges"], (res) => {
+    chrome.storage.local.get(["blockedUrls", "blockTimeRanges", "isBlocked"], (res) => {
         const urls = res.blockedUrls || [];
         const timeRanges = res.blockTimeRanges || [];
-        updateBlockRules(urls, timeRanges);
+        const isBlocked = res.isBlocked ?? false;
+        if (isBlocked) {
+            console.log("Blocking enabled. Updating rules...");
+            updateBlockRules(urls, timeRanges);
+        }
+        else {
+            console.log("Blocking disabled. Removing all rules...");
+            chrome.declarativeNetRequest.updateDynamicRules({
+                removeRuleIds: Array.from({ length: 1000 }, (_, i) => i + 1000) // ルールIDを削除
+            });
+        }
     });
 }
 chrome.runtime.onInstalled.addListener(syncRulesFromStorage);
@@ -49,4 +52,4 @@ chrome.storage.onChanged.addListener((changes, area) => {
         syncRulesFromStorage();
     }
 });
-setInterval(syncRulesFromStorage, 60 * 1000);
+setInterval(syncRulesFromStorage, 1 * 1000);

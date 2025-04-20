@@ -8,7 +8,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const endTimeInput = document.getElementById("end-time") as HTMLInputElement;
   const timeList = document.getElementById("time-list") as HTMLUListElement;
 
-  function renderUrlList(urls: string[]) {
+  const blockToggle = document.getElementById("block-toggle") as HTMLInputElement;
+
+  // debug
+  console.log("DOMContentLoaded イベントが発火しました");
+  if (!blockToggle) {
+    console.error("block-toggle 要素が見つかりません");
+  } else {
+    console.log("block-toggle 要素が正常に取得されました");
+  }
+
+  // 初期状態を取得してトグルに反映
+  chrome.storage.local.get("isBlocked", (res) => {
+    blockToggle.checked = res.isBlocked ?? false;
+  });
+
+  // トグルの変更を監視して状態を保存
+  blockToggle.addEventListener("change", () => {
+    const isBlocked = blockToggle.checked;
+    chrome.storage.local.set({ isBlocked }, () => {
+      console.log(`ブロック状態が ${isBlocked ? "有効" : "無効"} に設定されました`);
+      chrome.storage.local.get("isBlocked", (res) => {
+        console.log("現在のストレージ状態:", res.isBlocked);
+      });
+    });
+  });
+
+function renderUrlList(urls: string[]) {
     urlList.innerHTML = "";
     urls.forEach((url, index) => {
       const li = document.createElement("li");
